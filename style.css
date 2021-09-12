@@ -1,0 +1,20 @@
+body{
+    margin:0px;
+}
+.menu-container{
+    border:1px solid black;
+    height:4rem;
+}
+.formula-container{
+    border:1px solid black;
+    height:2rem;
+}
+.sheets-container{
+    border:1px solid black;
+    height:1rem;
+}
+.grid-container{
+    border:1px solid black;
+    height:calc( 100vh - (7rem));
+    background-color: antiquewhite;
+}
