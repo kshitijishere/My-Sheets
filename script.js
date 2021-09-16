@@ -1,3 +1,39 @@
+let sheetdb=[];
+for(let i=1;i<=100;i++)
+{
+    let row=[];
+    for(j=1;j<=26;j++)
+    {
+        let ob={
+            bold:"normal",
+            italic:"normal",
+            underline:"none",
+            halign:"center",
+            fontfamily:"sans-sherif",
+            textsize:"12",
+            color:"black",
+        }
+        row.push(ob);
+    }
+    sheetdb.push(row);
+   
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ********************database above**********************
 const btn=document.querySelector('#addsheet');
 const firstsheet=document.querySelector('.sheetno');
 firstsheet.addEventListener('click',handler); 
@@ -66,7 +102,50 @@ for(let i=1;i<=100;i++)
         div.addEventListener('click',()=>{
             const display=document.querySelector('#selectedcell');
             
-            display.value=`${String.fromCharCode(64+j)}${i}`
+            display.value=`${String.fromCharCode(64+j)}${i}`;
+            let ob=sheetdb[i][j];
+            const bold=document.querySelector('#span1');
+            if(ob.bold=="normal")
+                bold.classList.remove('iconactive');
+            else
+                bold.classList.add('iconactive');
+            const italic=document.querySelector('#span3');
+            if(ob.italic=="normal")
+                italic.classList.remove('iconactive');
+            else
+                italic.classList.add('iconactive');
+            const uline=document.querySelector('#span2');
+            if(ob.underline=="none")
+                uline.classList.remove('iconactive');
+            else
+                uline.classList.add('iconactive');
+            const leftalign=document.querySelector('#left');
+            const rightalign=document.querySelector('#right');
+            const centeralign=document.querySelector('#center')
+            if(ob.halign=="left")
+            {
+                leftalign.classList.add('iconactive');
+                rightalign.classList.remove('iconactive');
+                centeralign.classList.remove('iconactive');
+            }
+            else if(ob.halign=="right")
+            {
+                rightalign.classList.add('iconactive');
+                leftalign.classList.remove('iconactive');
+                centeralign.classList.remove('iconactive');
+            }  
+            else
+            {
+                centeralign.classList.add('iconactive');
+                rightalign.classList.remove('iconactive');
+                leftalign.classList.remove('iconactive');
+            }
+            // alert(`${ob.textsize}`);
+            let size=document.querySelector('#fontsize');
+            size.value=`${ob.textsize}`;
+                
+
+            
         })
         
         row.append(div);
@@ -77,25 +156,131 @@ for(let i=1;i<=100;i++)
 
 
 // script for menu
+function getloc(){
+    let selected=document.querySelector('#selectedcell');
+        
+    let colno=selected.value.charCodeAt(0);
+    colno=colno-64;
+    colno=colno.toString();
+    let rowno="";
+    for(let i=1;i<selected.value.length;i++)
+    {
+        rowno=rowno+selected.value[i];
+    }
 
+    rowno=rowno.toString();
+    
+    return{colno,rowno};
+}
 let bold=document.querySelector('#span1');
 bold.addEventListener('click',()=>{
     bold.classList.add('iconactive');
-        let ad=document.querySelector('#selectedcell');
+    let colno,rowno;
+    let ob=getloc();
+    colno=ob.colno;
+    rowno=ob.rowno;
+    let dbob=sheetdb[rowno][colno];
+    let celldiv=document.querySelector(`div[col="${colno}"][row="${rowno}"]`);
+    if(dbob.bold=="bold")
+    {
+        dbob.bold="normal";
+        celldiv.style.fontWeight="normal";
+        bold.classList.remove('iconactive');
+    }
         
-        let colno=ad.value.charCodeAt(0);
-        colno=colno-64;
-        colno=colno.toString();
-        let rowno="";
-        for(let i=1;i<ad.value.length;i++)
-        {
-            rowno=rowno+ad.value[i];
-        }
-
-        rowno=rowno.toString();
+    else
+    {
+        dbob.bold="bold";
+        celldiv.style.fontWeight="bold";
+    }
         
-        let celldiv=document.querySelector(`div[col="${colno}"][row="${rowno}"]`);
     
-    celldiv.style.fontWeight="bold";
+    
 })
+
+let italic=document.querySelector('#span3');
+italic.addEventListener('click',()=>{
+    italic.classList.add('iconactive');
+    let ob=getloc();
+    let colno=ob.colno;
+    let rowno=ob.rowno;
+    let dbob=sheetdb[rowno][colno];
+    let celldiv=document.querySelector(`div[col="${colno}"][row="${rowno}"]`);
+    
+    if(dbob.italic=="italic")
+    {
+        dbob.italic="normal";
+        italic.classList.remove('iconactive');
+        celldiv.style.fontStyle="normal";
+
+    }
+    else
+    {
+        dbob.italic="italic";
+        celldiv.style.fontStyle="italic";
+    }
+        
+    
+})
+let underline=document.querySelector('#span2');
+underline.addEventListener('click',()=>{
+    let ob=getloc();
+    let colno=ob.colno;
+    let rowno=ob.rowno;
+    let dbob=sheetdb[rowno][colno];
+    let celldiv=document.querySelector(`div[col="${colno}"][row="${rowno}"]`);
+    if(dbob.underline=="underline")
+    {
+        dbob.underline="none";
+        underline.classList.remove('iconactive');
+        celldiv.style.textDecoration="none";
+    }
+    else{
+        dbob.underline="underline";
+        underline.classList.add('iconactive');
+        celldiv.style.textDecoration="underline";
+    }
+})
+let alignment=document.querySelectorAll('#align>*');
+for(let i=0;i<alignment.length;i++)
+{
+    alignment[i].addEventListener('click',()=>{
+    let align=alignment[i].getAttribute('id');
+    alignment[i].classList.add('iconactive');
+    if(i==0)
+    {
+        alignment[1].classList.remove('iconactive');
+        alignment[2].classList.remove('iconactive');
+    }
+    if(i==1)
+    {
+        alignment[0].classList.remove('iconactive');
+        alignment[2].classList.remove('iconactive');
+    }
+    if(i==2)
+    {
+        alignment[0].classList.remove('iconactive');
+        alignment[1].classList.remove('iconactive');
+    }
+    let ob=getloc();
+    let colno=ob.colno;
+    let rowno=ob.rowno;
+    let dbob=sheetdb[rowno][colno];
+    dbob.halign=`${align}`;
+    let celldiv=document.querySelector(`div[col="${colno}"][row="${rowno}"]`);
+    celldiv.style.textAlign=`${align}`;
+    })
+}
+let textsize=document.querySelector('#fontsize');
+textsize.addEventListener('change',()=>{
+    let value=textsize.value;
+    let ob=getloc();
+    let colno=ob.colno;
+    let rowno=ob.rowno;
+    let dbob=sheetdb[rowno][colno];
+    dbob.textsize=`${value}`;
+    let celldiv=document.querySelector(`div[col="${colno}"][row="${rowno}"]`);
+    celldiv.style.fontSize=`${value}px`;
+})
+
 

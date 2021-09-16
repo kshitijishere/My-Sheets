@@ -186,8 +186,8 @@ body{
     min-width:6rem;
     border:0.5px solid green;
     height:1.5rem;
-    display: flex;
-    text-align: center;  
+    /* display: flex; */
+    text-align: center; 
 
 }
 .rows{
