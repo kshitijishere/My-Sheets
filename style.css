@@ -11,9 +11,19 @@ body{
     /* border:1px solid black; */
     height:4rem;
 }
-#topmenu{
-    height:2rem;
+#topmenu>span{
+    margin-right: 1.5rem;
+    margin-left: 0.5rem;
 }
+hr{
+    margin:0px;
+    margin-bottom: 0.5px;
+    border-style: solid;
+    border-color:whitesmoke;
+}
+
+
+
 #bottommenu{
     height:2rem;
     display:flex;

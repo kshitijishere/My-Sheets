@@ -12,6 +12,9 @@ for(let i=1;i<=100;i++)
             fontfamily:"sans-sherif",
             textsize:"12",
             color:"black",
+            formula:"",
+            value:"",
+            children:[],
         }
         row.push(ob);
     }
@@ -19,21 +22,44 @@ for(let i=1;i<=100;i++)
    
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ********************database above**********************
+//**************newopen save */
+
+const downloadfile=document.querySelector('.download');
+downloadfile.addEventListener('click',()=>{
+    const data = JSON.stringify(sheetdb);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+
+// Create a link and trigger the download
+    const link = document.createElement('a');
+    link.download = 'filenamedata';
+    link.href = `${url}`;
+    document.body.appendChild(link);
+    link.click();
+    // Remove the element
+    document.body.removeChild(link);
+    // Free the URL created above
+    window.URL.revokeObjectURL(url);
+})
+const upload=document.querySelector('.open');
+upload.addEventListener('click',()=>{
+    
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const btn=document.querySelector('#addsheet');
 const firstsheet=document.querySelector('.sheetno');
 firstsheet.addEventListener('click',handler); 
@@ -89,7 +115,6 @@ const grid=document.querySelector('.grid');
 for(let i=1;i<=100;i++)
 {
     const row=document.createElement('div');
-    row.innerText;
     row.classList.add('rows');
     for(let j=1;j<=26;j++)
     {
@@ -99,6 +124,26 @@ for(let i=1;i<=100;i++)
         div.setAttribute('row',i);
         div.setAttribute('contenteditable',"true");
         // div.innerText=`${String.fromCharCode(64+j)}${i}`;
+        div.addEventListener('blur',()=>{
+            // alert('blue');
+            let ob=sheetdb[i][j];
+            ob.value=div.innerText;
+            if(ob.children)
+            {
+                const children=ob.children;
+                for(let k=0;k<children.length;k++)
+                {
+                    const row=children[k].split(" ")[0];
+                    const col=children[k].split(" ")[1];
+                    const addressformula=sheetdb[row][col].formula;
+                    const expression=evaluateexpression(addressformula,row,col);
+                    sheetdb[row][col].value=expression;
+                    const div=document.querySelector(`[row="${row}"col="${col}]"`);
+                    div.innerText=expression;
+
+                }
+            }
+        })
         div.addEventListener('click',()=>{
             const display=document.querySelector('#selectedcell');
             
@@ -284,3 +329,79 @@ textsize.addEventListener('change',()=>{
 })
 
 
+// **********************formula bar hehe************************888
+
+const formula=document.querySelector('#formulainput');
+formula.addEventListener('keydown',(e)=>{
+
+    
+
+
+    if(e.key=="Enter"&&formula.value)
+    {
+        let colno,rowno;
+        let ob=getloc();
+        colno=ob.colno;
+        rowno=ob.rowno;
+        let value = formula.value.split(" ");
+         
+        let cellonformulavalue=evaluateexpression(value,rowno,colno);
+    // let cell1string=value[1];
+    // let cell2string=value[3];
+    // let operator=value[2];
+    // let col1=cell1string[0].charCodeAt(0);
+    // col1=col1-64;
+    // let row1="";
+    // for(let i=1;i<cell1string.length;i++)
+    // {
+    //     row1=row1+cell1string[i];
+    // }
+    // let col2=cell2string[0].charCodeAt(0);
+    // col2=col2-64;
+    // let row2="";
+    // for(let i=1;i<cell2string.length;i++)
+    // {
+    //     row2=row2+cell2string[i];
+    // }
+    // const cell1value=sheetdb[row1][col1].value;
+    // const cell2value=sheetdb[row2][col2].value;
+// ***********for  getting value of selected cell on which operation is made 
+    
+    const cellonformula=document.querySelector(`div[row="${rowno}"][col="${colno}"]`);
+    // if(operator=="+")
+    // {
+    //     cellonformulavalue=Number(cell1value)+Number(cell2value);
+    // }
+        
+    // if(operator=="-")
+    //     cellonformulavalue=Number(cell1value)-Number(cell2value);
+    // if(operator=="*")
+    //     cellonformulavalue=Number(cell1value)*Number(cell2value);
+    //     if(operator=="/")
+    //     cellonformulavalue=Number(cell1value)/Number(cell2value);
+    cellonformula.innerText=cellonformulavalue;
+    sheetdb[rowno][colno].value=cellonformulavalue;
+    sheetdb[rowno][colno].formula=formula.value;
+
+    }
+})
+function evaluateexpression(value,rowno,colno)
+{
+    for(let i=0;i<value.length;i++)
+    {
+        if(value[i].charCodeAt(0)>=65&&value[i].charCodeAt(0)<=90)
+        {
+            let col=value[i].charCodeAt(0)-64;
+            console.log(col);
+            let row=""
+            for(let j=1;j<value[i].length;j++)
+                row=row+value[i][j];
+            const cellvalue=sheetdb[row][col].value;
+            const addr=document.querySelector('#selectedcell');
+            sheetdb[row][col].children.push(addr);     
+            value[i]=cellvalue;    
+        }
+    }
+    value=value.join(" ");
+    return eval(value);
+}  
