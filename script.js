@@ -18,9 +18,29 @@ for(let i=1;i<=100;i++)
         }
         row.push(ob);
     }
-    sheetdb.push(row);
-   
+    sheetdb.push(row);   
 }
+function evaluateexpression(value,check)
+{
+    for(let i=0;i<value.length;i++)
+    {
+        if(value[i].charCodeAt(0)>=65&&value[i].charCodeAt(0)<=90)
+        {
+            let col=value[i].charCodeAt(0)-64;
+            console.log(col);
+            let row=""
+            for(let j=1;j<value[i].length;j++)
+                row=row+value[i][j];
+            const cellvalue=sheetdb[row][col].value;
+            const addr=document.querySelector('#selectedcell');
+            if(check)
+                sheetdb[row][col].children.push(addr.value);     
+            value[i]=cellvalue;    
+        }
+    }
+    value=value.join(" ");
+    return eval(value);
+}  
 
 // ********************database above**********************
 //**************newopen save */
@@ -133,13 +153,15 @@ for(let i=1;i<=100;i++)
                 const children=ob.children;
                 for(let k=0;k<children.length;k++)
                 {
-                    const row=children[k].split(" ")[0];
-                    const col=children[k].split(" ")[1];
-                    const addressformula=sheetdb[row][col].formula;
-                    const expression=evaluateexpression(addressformula,row,col);
+                    const col=children[k].charCodeAt(0)-64;
+                    const row=children[k].substring(1);
+                    let addressformula=sheetdb[row][col].formula;
+                    addressformula=addressformula.split(" ");
+                    const expression=evaluateexpression(addressformula,false);
                     sheetdb[row][col].value=expression;
-                    const div=document.querySelector(`[row="${row}"col="${col}]"`);
-                    div.innerText=expression;
+                    const div2=document.querySelector(`div[col="${col}"][row="${row}"]`);
+                    
+                    div2.innerText=expression;
 
                 }
             }
@@ -345,7 +367,7 @@ formula.addEventListener('keydown',(e)=>{
         rowno=ob.rowno;
         let value = formula.value.split(" ");
          
-        let cellonformulavalue=evaluateexpression(value,rowno,colno);
+        let cellonformulavalue=evaluateexpression(value,true);
     // let cell1string=value[1];
     // let cell2string=value[3];
     // let operator=value[2];
@@ -385,23 +407,4 @@ formula.addEventListener('keydown',(e)=>{
 
     }
 })
-function evaluateexpression(value,rowno,colno)
-{
-    for(let i=0;i<value.length;i++)
-    {
-        if(value[i].charCodeAt(0)>=65&&value[i].charCodeAt(0)<=90)
-        {
-            let col=value[i].charCodeAt(0)-64;
-            console.log(col);
-            let row=""
-            for(let j=1;j<value[i].length;j++)
-                row=row+value[i][j];
-            const cellvalue=sheetdb[row][col].value;
-            const addr=document.querySelector('#selectedcell');
-            sheetdb[row][col].children.push(addr);     
-            value[i]=cellvalue;    
-        }
-    }
-    value=value.join(" ");
-    return eval(value);
-}  
+
