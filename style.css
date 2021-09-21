@@ -66,7 +66,8 @@ hr{
     
 }
 .iconactive{
-    background-color:rgb(178, 178, 248);
+    /* background-color:rgb(178, 178, 248); */
+    background-color:#CEE5D0;
 }
 #align{
     display: flex;
@@ -74,11 +75,74 @@ hr{
     width:8rem;
 
 }
-#color{
-    
-   width:10rem;
+#textcolor{
+    /* display: flex; */
+    margin-left: 1rem;
+    position: relative;
+    width:4rem;
+    /* justify-content: space-around; */
+}
+#backgroundcolor{
+    position:relative;
+    margin-left:1rem;
+    width:4rem;
 }
 
+
+.hovertextcolor{
+    width: 50px;
+    /* overflow: visible; */
+    visibility: hidden;
+    position: absolute;
+    top:2.2rem;
+    left:0rem;
+    visibility: hidden;
+    
+    height: 25px;
+    font-size: x-small;
+    background-color: rgb(139, 161, 165);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    /* position: inherit;
+    z-index:1;
+   */
+  }
+.colorpicker:hover + .hovertextcolor{
+    visibility: visible;
+}
+#inputtextcolor{
+    visibility: hidden;
+    position:absolute;
+    top:0.2rem;
+    left:-5.4rem;
+} 
+.hoverbgcolor{
+    /* overflow:visible; */
+    visibility: hidden;
+    position: absolute;
+    top:2.2rem;
+    left:-0.5rem;
+    width: 50px;
+    height: 25px;
+    font-size: x-small;
+    background-color: rgb(139, 161, 165);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+}
+.cellcolor:hover + .hoverbgcolor{
+    visibility: visible;
+}
+#inputbgcolor{
+    visibility: hidden;
+    position:absolute;
+    top:0.2rem;
+    left:-5.4rem;
+} 
 
 
 
@@ -138,7 +202,7 @@ hr{
     width:2rem;
     height:1.5rem;
     border:0.5px solid black;
-    background-color: tomato;
+    background-color: #CEE5D0;
     /* position: fixed; */
 }
 .firstcol{
@@ -169,7 +233,7 @@ hr{
     height:1.5rem;
     display: flex;
     text-align: center;
-    background-color: yellow;
+    background-color: #CEE5D0;
             
     
 }
@@ -193,7 +257,7 @@ hr{
 }
 .cells{
     min-width:6rem;
-    border:0.5px solid green;
+    border:0.5px solid #b7d4b9;
     height:1.5rem;
     /* display: flex; */
     text-align: center; 
@@ -230,7 +294,7 @@ hr{
 }
 button{
     border-radius: 60%;
-    background-color:#F7D59C;
+    background-color:#9ed6a2;
 }
 .addbutton{
     
@@ -263,5 +327,5 @@ button{
     background-color: silver;
 }
 .active{
-    background-color:#80ED99 ;
+    background-color:#b3d3b6 ;
 }

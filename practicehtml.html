@@ -7,14 +7,19 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="">
-    <input type="text">
-</form>
+    <div style="width:100%;justify-content: center;">
+        <input type="color">pick
+        
+    </div>
+    <button >colorpick</button>
+    
     <script>
+        const btn=document.querySelector('button');
+        const btn2=document.querySelector('input'); 
+        btn.addEventListener('click',()=>{
+        btn2.click();
+        console.log(btn2.value);
 
-        const int=document.querySelector('form');
-        int.addEventListener('submit',()=>{
-            alert('submit');
         })
     </script>
 </body>

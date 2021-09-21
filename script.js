@@ -12,6 +12,7 @@ for(let i=1;i<=100;i++)
             fontfamily:"sans-sherif",
             textsize:"12",
             color:"black",
+            bgcolor:"#eeeef8",
             formula:"",
             value:"",
             children:[],
@@ -20,27 +21,7 @@ for(let i=1;i<=100;i++)
     }
     sheetdb.push(row);   
 }
-function evaluateexpression(value,check)
-{
-    for(let i=0;i<value.length;i++)
-    {
-        if(value[i].charCodeAt(0)>=65&&value[i].charCodeAt(0)<=90)
-        {
-            let col=value[i].charCodeAt(0)-64;
-            console.log(col);
-            let row=""
-            for(let j=1;j<value[i].length;j++)
-                row=row+value[i][j];
-            const cellvalue=sheetdb[row][col].value;
-            const addr=document.querySelector('#selectedcell');
-            if(check)
-                sheetdb[row][col].children.push(addr.value);     
-            value[i]=cellvalue;    
-        }
-    }
-    value=value.join(" ");
-    return eval(value);
-}  
+  
 
 // ********************database above**********************
 //**************newopen save */
@@ -75,7 +56,7 @@ upload.addEventListener('click',()=>{
 
 
 
-
+// ********************************************sheets*****************
 
 
 
@@ -145,26 +126,27 @@ for(let i=1;i<=100;i++)
         div.setAttribute('contenteditable',"true");
         // div.innerText=`${String.fromCharCode(64+j)}${i}`;
         div.addEventListener('blur',()=>{
-            // alert('blue');
             let ob=sheetdb[i][j];
-            ob.value=div.innerText;
-            if(ob.children)
+            if(ob.value!=div.innerText)
             {
-                const children=ob.children;
-                for(let k=0;k<children.length;k++)
+                if(ob.children)
                 {
-                    const col=children[k].charCodeAt(0)-64;
-                    const row=children[k].substring(1);
-                    let addressformula=sheetdb[row][col].formula;
-                    addressformula=addressformula.split(" ");
-                    const expression=evaluateexpression(addressformula,false);
-                    sheetdb[row][col].value=expression;
-                    const div2=document.querySelector(`div[col="${col}"][row="${row}"]`);
-                    
-                    div2.innerText=expression;
-
-                }
+                    ob.value=div.innerText;
+                    reevaluate(ob);
+                } 
+                if(ob.formula.length>=1)
+                {
+                    breakparentconnection(ob,i,j);
+                    ob.formula="";
+                } 
+                 
             }
+            else
+            {
+                ob.value=div.innerText;
+            }
+            
+            
         })
         div.addEventListener('click',()=>{
             const display=document.querySelector('#selectedcell');
@@ -207,9 +189,11 @@ for(let i=1;i<=100;i++)
                 rightalign.classList.remove('iconactive');
                 leftalign.classList.remove('iconactive');
             }
-            // alert(`${ob.textsize}`);
             let size=document.querySelector('#fontsize');
             size.value=`${ob.textsize}`;
+            const formulabarvalue=document.querySelector('#formulainput');
+            formulabarvalue.value=sheetdb[i][j].formula;
+
                 
 
             
@@ -219,7 +203,6 @@ for(let i=1;i<=100;i++)
     }
     grid.append(row);
 }
-
 
 
 // script for menu
@@ -349,16 +332,41 @@ textsize.addEventListener('change',()=>{
     let celldiv=document.querySelector(`div[col="${colno}"][row="${rowno}"]`);
     celldiv.style.fontSize=`${value}px`;
 })
+const colorpicker=document.querySelector('.colorpicker');
+const inputcolor=document.querySelector('#inputtextcolor');
+inputcolor.addEventListener('change',()=>{
+    let ob=getloc();
+    let colno=ob.colno;
+    let rowno=ob.rowno;
+    let dbob=sheetdb[rowno][colno];
+    dbob.color=`${inputcolor.value}`;
+    let celldiv=document.querySelector(`div[col="${colno}"][row="${rowno}"]`);
+    celldiv.style.color=`${inputcolor.value}`;
+})
+colorpicker.addEventListener('click',()=>{
+    inputcolor.click();  
+})
+const cellcolor=document.querySelector('.cellcolor');
+const inputcellcolor=document.querySelector('#inputbgcolor');
+inputcellcolor.addEventListener('change',()=>{
+    let ob=getloc();
+    let colno=ob.colno;
+    let rowno=ob.rowno;
+    let dbob=sheetdb[rowno][colno];
+    dbob.bgcolor=`${inputcellcolor.value}`;
+    let celldiv=document.querySelector(`div[col="${colno}"][row="${rowno}"]`);
+    celldiv.style.backgroundColor=`${inputcellcolor.value}`;
+})
+cellcolor.addEventListener('click',()=>{
+    inputcellcolor.click();
+})
+
 
 
 // **********************formula bar hehe************************888
 
 const formula=document.querySelector('#formulainput');
 formula.addEventListener('keydown',(e)=>{
-
-    
-
-
     if(e.key=="Enter"&&formula.value)
     {
         let colno,rowno;
@@ -366,7 +374,10 @@ formula.addEventListener('keydown',(e)=>{
         colno=ob.colno;
         rowno=ob.rowno;
         let value = formula.value.split(" ");
-         
+        if(sheetdb[rowno][colno].formula)
+        {
+            breakparentconnection(sheetdb[rowno][colno],rowno,colno);
+        }
         let cellonformulavalue=evaluateexpression(value,true);
     // let cell1string=value[1];
     // let cell2string=value[3];
@@ -388,7 +399,6 @@ formula.addEventListener('keydown',(e)=>{
     // const cell1value=sheetdb[row1][col1].value;
     // const cell2value=sheetdb[row2][col2].value;
 // ***********for  getting value of selected cell on which operation is made 
-    
     const cellonformula=document.querySelector(`div[row="${rowno}"][col="${colno}"]`);
     // if(operator=="+")
     // {
@@ -404,7 +414,65 @@ formula.addEventListener('keydown',(e)=>{
     cellonformula.innerText=cellonformulavalue;
     sheetdb[rowno][colno].value=cellonformulavalue;
     sheetdb[rowno][colno].formula=formula.value;
-
     }
 })
+function evaluateexpression(value,check)
+{
+    for(let i=0;i<value.length;i++)
+    {
+        if(value[i].charCodeAt(0)>=65&&value[i].charCodeAt(0)<=90)
+        {
+            let col=value[i].charCodeAt(0)-64;
+            let row=value[i].substring(1);
+            const cellvalue=sheetdb[row][col].value;
+            const addr=document.querySelector('#selectedcell');
+            if(check)
+                sheetdb[row][col].children.push(addr.value);     
+            value[i]=cellvalue;    
+        }
+    }
+    value=value.join(" ");
+    return eval(value);
+}
+function reevaluate(ob)
+{
+    const children=ob.children;
+    for(let k=0;k<children.length;k++)
+    {
+        const col=children[k].charCodeAt(0)-64;
+        const row=children[k].substring(1);
+        let addressformula=sheetdb[row][col].formula;
+        addressformula=addressformula.split(" ");
+        const expression=evaluateexpression(addressformula,false);
+        sheetdb[row][col].value=expression;
+        const div2=document.querySelector(`div[col="${col}"][row="${row}"]`);
+        
+        div2.innerText=expression;
+        if(sheetdb[row][col].children.length)
+        {
+            reevaluate(sheetdb[row][col]);
+        }
+    }
+
+}
+function breakparentconnection(ob,row,col)
+{
+    let formulavalue=ob.formula.split(" ");
+    for(let i=0;i<formulavalue.length;i++)
+    {
+        if(formulavalue[i].charCodeAt(0)>=65&&formulavalue[i].charCodeAt(0)<=90)
+        {
+            let parentcell=formulavalue[i];
+            console.log(parentcell);
+            let colparent=parentcell.charCodeAt(0)-64;
+            let rowparent=parentcell.substring(1);
+            console.log(colparent);
+            console.log(rowparent);
+            let col2=String.fromCharCode(`${col}+64`); 
+            console.log(col2);
+            let index=sheetdb[rowparent][colparent].children.indexOf(`${col}${row}`);
+            sheetdb[rowparent][colparent].children.splice(index,1);
+        }
+    }
+}
 
