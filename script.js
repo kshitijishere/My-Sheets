@@ -9,7 +9,7 @@ for(let i=1;i<=100;i++)
             italic:"normal",
             underline:"none",
             halign:"center",
-            fontfamily:"sans-sherif",
+            fontfamily:"Sans-seriff",
             textsize:"12",
             color:"black",
             bgcolor:"#eeeef8",
@@ -193,6 +193,8 @@ for(let i=1;i<=100;i++)
             size.value=`${ob.textsize}`;
             const formulabarvalue=document.querySelector('#formulainput');
             formulabarvalue.value=sheetdb[i][j].formula;
+            const fontfamily=document.querySelector('#fontstyle');
+            fontfamily.value=ob.fontfamily;
 
                 
 
@@ -360,7 +362,17 @@ inputcellcolor.addEventListener('change',()=>{
 cellcolor.addEventListener('click',()=>{
     inputcellcolor.click();
 })
-
+const fontstyle=document.querySelector('#fontstyle');
+fontstyle.addEventListener('change',()=>{
+    const value=fontstyle.value;
+    let ob=getloc();
+    let colno=ob.colno;
+    let rowno=ob.rowno;
+    let dbob=sheetdb[rowno][colno];
+    dbob.fontfamily=`${value}`;
+    let celldiv=document.querySelector(`div[col="${colno}"][row="${rowno}"]`);
+    celldiv.style.fontFamily=`${value}`;
+})
 
 
 // **********************formula bar hehe************************888
