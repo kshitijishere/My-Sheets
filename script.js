@@ -1,29 +1,9 @@
-let sheetdb=[];
-for(let i=1;i<=100;i++)
-{
-    let row=[];
-    for(j=1;j<=26;j++)
-    {
-        let ob={
-            bold:"normal",
-            italic:"normal",
-            underline:"none",
-            halign:"center",
-            fontfamily:"Sans-seriff",
-            textsize:"12",
-            color:"black",
-            bgcolor:"#eeeef8",
-            formula:"",
-            value:"",
-            children:[],
-        }
-        row.push(ob);
-    }
-    sheetdb.push(row);   
-}
+
+
+
   
 
-// ********************database above**********************
+
 //**************newopen save */
 
 const downloadfile=document.querySelector('.download');
@@ -47,51 +27,6 @@ const upload=document.querySelector('.open');
 upload.addEventListener('click',()=>{
     
 })
-
-
-
-
-
-
-
-
-
-// ********************************************sheets*****************
-
-
-
-
-const btn=document.querySelector('#addsheet');
-const firstsheet=document.querySelector('.sheetno');
-firstsheet.addEventListener('click',handler); 
-btn.addEventListener('click',()=>{
-    let totalsheets=document.querySelectorAll('.sheetno');
-    let index=totalsheets.length;
-    index=Number(index);
-    console.log(index);
-    let sheet=document.createElement('div');
-    sheet.append(`sheet${index+1}`)
-    sheet.classList.add('sheetno');
-    sheet.classList.add('active');
-    sheet.setAttribute('idx',index+1);
-    const sheetspace=document.querySelector('.sheetspace');
-    sheetspace.append(sheet);
-    for(let shee of totalsheets)
-    {
-        shee.classList.remove('active');
-    }
-    sheet.addEventListener('click',handler);
-    
-})
-function handler(){
-    let total=document.querySelectorAll('.sheetno');
-    for(let sheet of total)
-    {
-        sheet.classList.remove('active');
-    }
-    this.classList.add('active');
-}
-
 
 
 // script for grid
@@ -204,6 +139,115 @@ for(let i=1;i<=100;i++)
         row.append(div);
     }
     grid.append(row);
+}
+
+// ********************************************sheets*****************
+
+// ********************database below**********************
+
+let multiplesheets=[];
+function createsheet()
+{
+    let sheetdb=[];
+    for(let i=0;i<=100;i++)
+    {
+        let row=[];
+        for(j=0;j<=26;j++)
+        {
+            let ob={
+                bold:"normal",
+                italic:"normal",
+                underline:"none",
+                halign:"center",
+                fontfamily:"Sans-seriff",
+                textsize:"12",
+                color:"black",
+                bgcolor:"#eeeef8",
+                formula:"",
+                value:"",
+                children:[],
+            }
+         row.push(ob);
+        }
+    sheetdb.push(row);   
+    }
+    multiplesheets.push(sheetdb);
+    addsheettoui(sheetdb);
+}
+addsheettoui=(sheet)=>
+{
+    for(let i=1;i<=100;i++)
+    {
+        for(let j=1;j<=26;j++)
+        {
+            const div=document.querySelector(`div[col="${j}"][row="${i}"]`);
+            div.innerText=`${sheet[i][j].value}`;
+            div.style.fontStyle=sheet[i][j].italic;
+            div.stylefontWeight=sheet[i][j].bold;
+            div.style.textDecoration=sheet[i][j].underline;
+            div.style.color=sheet[i][j].color;
+            div.style.backgroundColor=sheet[i][j].bgcolor;
+            div.style.textAlign=sheet[i][j].halign;
+            div.style.fontFamily=sheet[i][j].fontfamily;
+            div.style.textSize=sheet[i][j].textsize;
+
+            
+        }
+    }
+}
+createsheet();
+let sheetdb=multiplesheets[0];
+
+
+// ************************************sheetsNOw************
+
+const btn=document.querySelector('#addsheet');
+const firstsheet=document.querySelector('.sheetno');
+firstsheet.addEventListener('click',handler); 
+btn.addEventListener('click',()=>{
+    createsheet();
+    removeactivefrommenu();
+    sheetdb=multiplesheets[multiplesheets.length-1];
+
+    let totalsheets=document.querySelectorAll('.sheetno');
+    let index=totalsheets.length;
+    index=Number(index);
+    let sheet=document.createElement('div');
+    sheet.append(`sheet${index+1}`)
+    sheet.classList.add('sheetno');
+    sheet.classList.add('active');
+    sheet.setAttribute('idx',index+1);
+    const sheetspace=document.querySelector('.sheetspace');
+    sheetspace.append(sheet);
+    for(let shee of totalsheets)
+    {
+        shee.classList.remove('active');
+    }
+    sheet.addEventListener('click',handler);
+    
+})
+function handler(){
+    removeactivefrommenu();
+    let total=document.querySelectorAll('.sheetno');
+    let index=this.getAttribute('idx');
+    let sheet=multiplesheets[index-1];
+    addsheettoui(sheet);
+    sheetdb=sheet;
+    for(let sheet of total)
+    {
+        sheet.classList.remove('active');
+    }
+    this.classList.add('active');
+}
+removeactivefrommenu=()=>{
+    let b=document.querySelector('#span1').classList.remove('iconactive');
+    let u=document.querySelector('#span2').classList.remove('iconactive');
+    let ital=document.querySelector('#span3').classList.remove('iconactive');
+    let left=document.querySelector('#left').classList.remove('iconactive');
+    let mid=document.querySelector('#center').classList.remove('iconactive');
+    let right=document.querySelector('#right').classList.remove('iconactive');
+    let size=document.querySelector('#fontsize').value=12;
+    let family=document.querySelector('#fontstyle').value="Sans-seriff"
 }
 
 
